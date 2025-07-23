@@ -1,6 +1,6 @@
-# Spring Boot User Authentication Demo
+# Spring Boot User Authentication API
 
-A comprehensive Spring Boot application demonstrating user authentication, registration, and secure API endpoints with H2 database persistence.
+A comprehensive Spring Boot backend API demonstrating user authentication, registration, and secure REST endpoints with H2 database persistence.
 
 ## 🚀 Features
 
@@ -9,7 +9,7 @@ A comprehensive Spring Boot application demonstrating user authentication, regis
 - **RESTful APIs**: Full CRUD operations with authentication
 - **Database Persistence**: H2 file-based database that persists data
 - **Spring Security**: HTTP Basic authentication for protected endpoints
-- **Interactive Demo**: Web interface for testing all features
+- **Backend API**: Ready for frontend integration (React, Vue, Angular, etc.)
 
 ## 🛠️ Technologies Used
 
@@ -45,8 +45,7 @@ A comprehensive Spring Boot application demonstrating user authentication, regis
    ```
 
 4. **Access the application**:
-   - Main app: http://localhost:8080
-   - Interactive demo: http://localhost:8080/index.html
+   - API Base URL: http://localhost:8080
    - H2 Console: http://localhost:8080/h2-console
      - JDBC URL: `jdbc:h2:file:./data/demo_db`
      - Username: `sa`
@@ -77,15 +76,15 @@ A comprehensive Spring Boot application demonstrating user authentication, regis
 
 ### Register a new user:
 ```bash
-curl -X POST http://localhost:8080/api/auth/register 
-  -H "Content-Type: application/json" 
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
   -d '{"name":"John Doe","email":"john@example.com","password":"password123","age":30}'
 ```
 
 ### Login:
 ```bash
-curl -X POST http://localhost:8080/api/auth/login 
-  -H "Content-Type: application/json" 
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
   -d '{"email":"john@example.com","password":"password123"}'
 ```
 
@@ -131,7 +130,6 @@ src/
 │   │   ├── service/        # Business logic
 │   │   └── DemoApplication.java
 │   └── resources/
-│       ├── static/         # Static web content
 │       └── application.properties
 └── test/                   # Test files
 ```
@@ -139,10 +137,54 @@ src/
 ## 🚦 Getting Started
 
 1. Start the application using `mvn spring-boot:run`
-2. Visit http://localhost:8080/index.html for the interactive demo
-3. Try registering a new user and logging in
-4. Test the protected endpoints with authentication
-5. Explore the H2 database console to see stored data
+2. The API will be available at http://localhost:8080
+3. Test the authentication endpoints using curl or Postman
+4. Use the H2 console to explore the database
+5. Integrate with your React frontend application
+
+## 🔗 Frontend Integration
+
+This backend API is designed to work with any frontend framework. For React integration:
+
+### CORS Configuration
+The API includes CORS support for frontend development. You may need to configure CORS origins in `SecurityConfig.java` based on your React app's URL.
+
+### Authentication Flow
+1. **Register**: POST to `/api/auth/register` with user details
+2. **Login**: POST to `/api/auth/login` to verify credentials
+3. **API Access**: Use HTTP Basic Auth with email/password for protected endpoints
+
+### Example React Integration
+```javascript
+// Register user
+const registerUser = async (userData) => {
+  const response = await fetch('http://localhost:8080/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData)
+  });
+  return response.json();
+};
+
+// Login user
+const loginUser = async (credentials) => {
+  const response = await fetch('http://localhost:8080/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credentials)
+  });
+  return response.json();
+};
+
+// Access protected data
+const getUsers = async (email, password) => {
+  const credentials = btoa(`${email}:${password}`);
+  const response = await fetch('http://localhost:8080/api/users', {
+    headers: { 'Authorization': `Basic ${credentials}` }
+  });
+  return response.json();
+};
+```
 
 ## 🤝 Contributing
 
@@ -173,66 +215,3 @@ Key configuration in `application.properties`:
 ---
 
 **Happy coding!** 🎉
-
-## Features
-
-- Spring Boot 3.4.1
-- Java 17
-- Maven build system
-- Spring Web (REST APIs)
-- Spring Boot DevTools (for development)
-- JUnit 5 testing
-
-## Project Structure
-
-```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/example/demo/
-│   │       ├── DemoApplication.java          # Main application class
-│   │       └── controller/
-│   │           └── HelloController.java      # REST controller
-│   └── resources/
-│       └── application.properties            # Application configuration
-└── test/
-    └── java/
-        └── com/example/demo/
-            └── DemoApplicationTests.java     # Basic test class
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Java 17 or higher
-- Maven 3.6 or higher
-
-### Running the Application
-
-1. Build the project:
-   ```bash
-   mvn clean compile
-   ```
-
-2. Run the application:
-   ```bash
-   mvn spring-boot:run
-   ```
-
-3. The application will start on `http://localhost:8080`
-
-### Available Endpoints
-
-- `GET /` - Returns "Hello, Spring Boot!"
-- `GET /api/hello` - Returns "Hello from API!"
-
-### Running Tests
-
-```bash
-mvn test
-```
-
-## Development
-
-This project includes Spring Boot DevTools for enhanced development experience with automatic restarts when code changes are detected.
